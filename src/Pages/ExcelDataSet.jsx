@@ -5,11 +5,11 @@ import SetCreate from "../Components/SetCreateModal/SetCreate";
 import { SETS } from "../Constant/Constant";
 
 function ExcelDataSet() {
-  const [sets,setSets]=useState()
-  const [reset,setReset]=useState()
-  useEffect(()=>{
-    setSets(JSON.parse(localStorage.getItem(SETS)))
-  },[reset])
+  const [sets, setSets] = useState();
+  const [reset, setReset] = useState();
+  useEffect(() => {
+    setSets(JSON.parse(localStorage.getItem(SETS)));
+  }, [reset]);
   return (
     <div style={{ padding: "10px" }}>
       <Box display={"flex"} justifyContent={"center"} alignItems={"center"}>
@@ -18,32 +18,28 @@ function ExcelDataSet() {
         </Text>
       </Box>
       <div className="col-md-12">
-        <Box width={'100%'} display={'flex'} justifyContent={'flex-end'}>
-        <SetCreate setReset={setReset}/>
+        <Box width={"100%"} display={"flex"} justifyContent={"flex-end"}>
+          <SetCreate setReset={setReset} />
         </Box>
-      <Table striped="columns">
-      <thead>
-        <tr>
- 
-          <th>Name</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {
-          sets&&sets.map((item,i)=>{
-            return <tr key={i}>
-            <td>{item.name}</td>
-            <td><tr>
-              </tr></td>
-
-          </tr>
-          })
-        }
-        
-       
-      </tbody>
-    </Table>
+        <Table striped="columns">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Number Of Columns</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sets &&
+              sets.map((item, i) => {
+                return (
+                  <tr key={i}>
+                    <td>{item.name}</td>
+                    <td>{item.tables.length}</td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        </Table>
       </div>
     </div>
   );

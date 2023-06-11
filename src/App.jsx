@@ -8,6 +8,7 @@ function App() {
     import("./Pages/GenerateEquipmentNumbers")
   );
   const ExcelGenerator = React.lazy(() => import("./Pages/ExcelDataSet"));
+  const Excel=React.lazy(()=>import('./Pages/GenerateExcel'))
   return (
     <div className="App">
       <Header />
@@ -20,7 +21,8 @@ function App() {
       >
         <Routes>
           <Route path="/" element={<GenerateEquipmentNumbers />} />
-          <Route path="/set" element={<ExcelGenerator />} />
+          <Route path="/sets" element={<ExcelGenerator />} />
+          <Route path="/excel" element={<Excel/>}/>
         </Routes>
       </Suspense>
     </div>
