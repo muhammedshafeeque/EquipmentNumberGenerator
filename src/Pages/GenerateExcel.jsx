@@ -4,11 +4,14 @@ import { Button, Row, Table } from "react-bootstrap";
 import { Form } from "react-bootstrap";
 import { SETS } from "../Constant/Constant";
 import * as XLSX from "xlsx";
-import { convertExceltoJosn } from "../Functions/BasicLogic";
+import {
+  GenerateExcelSheet,
+  convertExceltoJosn,
+} from "../Functions/BasicLogic";
 function GenerateExcel() {
-  const toast=useToast()
+  const toast = useToast();
   const [containers, setContainers] = useState([]);
-  const [set, setSet] = useState(null);
+  const [set, setSet] = useState();
   const [sets, setSets] = useState([]);
   useEffect(() => {
     setSets(JSON.parse(localStorage.getItem(SETS)));
@@ -26,18 +29,52 @@ function GenerateExcel() {
         const ws = wb.Sheets[wsname];
         const data = XLSX.utils.sheet_to_csv(ws, { header: 1 });
         let rJson = convertExceltoJosn(data);
-        setContainers([...containers,rJson])
+        setContainers(rJson);
       };
       reader.readAsBinaryString(f);
     } else {
       toast({
-        title: 'error',
-        status: 'error',
+        title: "error",
+        status: "error",
         duration: 9000,
         isClosable: true,
-      })
+      });
     }
   };
+  const handleSelectSet = async (e) => {
+    let item = sets[e.target.value];
+    setSet(item);
+    let formMatedResults = [];
+    let itemObj = {};
+    item.tables.forEach((ob) => {
+      itemObj[ob.head] = ob.defaultValue;
+    });
+    await containers.forEach((obj) => {
+      itemObj.ContainerNumber = obj.ContainerNumber;
+      formMatedResults.push(itemObj);
+    });
+  };
+  const handleGenerate = async (e) => {
+    e.preventDefault();
+    let HEADER_ROW = [{ value: "ContainerNumber" }];
+    await set.tables.forEach((item) => {
+      HEADER_ROW.push({ value: item.head });
+    });
+    let Rdata = [HEADER_ROW];
+    await containers.forEach(async (item) => {
+      Rdata.push(await generateRow(item.ContainerNumber));
+    });
+
+    GenerateExcelSheet(Rdata);
+  };
+  const generateRow = (containerNumebr) => {
+    let item = [{ value: containerNumebr, type: String }];
+    set.tables.forEach((obj) => {
+      item.push({ value: obj.defaultValue });
+    });
+    return item;
+  };
+
   return (
     <div style={{ padding: "10px" }}>
       <Box display={"flex"} justifyContent={"center"} alignItems={"center"}>
@@ -61,15 +98,24 @@ function GenerateExcel() {
           <Row className="mt-4">
             <div className="col-md-3">
               <label htmlFor="">Select Excel Mode</label>
-              <Form.Select>
+              <Form.Select onChange={handleSelectSet}>
                 {sets.map((item, i) => {
                   return (
-                    <option key={i} value={item}>
+                    <option key={i} value={i}>
                       {item.name}
                     </option>
                   );
                 })}
               </Form.Select>
+            </div>
+            <div className="col-md-6"></div>
+            <div className="col-md-3 ">
+              <Button
+                className="btn btn-sm btn-success mt-4 float-rignt"
+                onClick={handleGenerate}
+              >
+                Generate Excel
+              </Button>
             </div>
           </Row>
         </Form>
@@ -78,20 +124,24 @@ function GenerateExcel() {
           <thead>
             <tr>
               <th>ContainerNumber</th>
-              <th>First Name</th>
+              {set &&
+                set.tables.map((head, i) => {
+                  return <th key={i}>{head.head}</th>;
+                })}
             </tr>
           </thead>
           <tbody>
-            {containers.map((item,i)=>{
-             return <tr key={i} >
-              <td>{item.ContainerNumber}</td>
-              <td>Mark</td>
-              <td>Otto</td>
-              <td>@mdo</td>
-            </tr>
+            {containers.map((item, i) => {
+              return (
+                <tr key={i}>
+                  <td>{item.ContainerNumber}</td>
+                  {set &&
+                    set.tables.map((obj, j) => {
+                      return <td key={j}>{obj.defaultValue}</td>;
+                    })}
+                </tr>
+              );
             })}
-            
-            
           </tbody>
         </Table>
       </div>
