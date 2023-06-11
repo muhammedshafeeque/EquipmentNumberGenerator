@@ -4,7 +4,6 @@ import { Button, Row, Table } from "react-bootstrap";
 import { Form } from "react-bootstrap";
 import { SETS } from "../Constant/Constant";
 import * as XLSX from "xlsx";
-import moment from 'moment'
 import {
   GenerateExcelSheet,
   convertExceltoJosn,
@@ -126,7 +125,7 @@ function GenerateExcel() {
             <div className="col-md-3">
               <label htmlFor="">Select Excel Mode</label>
               <Form.Select onChange={handleSelectSet}>
-                {sets.map((item, i) => {
+                {sets.length&&sets.map((item,i) => {
                   return (
                     <option key={i} value={i}>
                       {item.name}

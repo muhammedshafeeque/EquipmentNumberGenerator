@@ -4,7 +4,7 @@ import { Table } from "react-bootstrap";
 import SetCreate from "../Components/SetCreateModal/SetCreate";
 import { SETS } from "../Constant/Constant";
 
-function ExcelDataSet() {
+function ExcelDataSet() { 
   const [sets, setSets] = useState();
   const [reset, setReset] = useState();
   useEffect(() => {
