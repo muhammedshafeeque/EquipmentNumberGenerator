@@ -26,6 +26,7 @@ function ExcelDataSet() {
             <tr>
               <th>Name</th>
               <th>Number Of Columns</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -35,6 +36,7 @@ function ExcelDataSet() {
                   <tr key={i}>
                     <td>{item.name}</td>
                     <td>{item.tables.length}</td>
+                    <td><SetCreate  edit={item} setReset={setReset}/></td>
                   </tr>
                 );
               })}

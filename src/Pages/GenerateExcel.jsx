@@ -4,6 +4,7 @@ import { Button, Row, Table } from "react-bootstrap";
 import { Form } from "react-bootstrap";
 import { SETS } from "../Constant/Constant";
 import * as XLSX from "xlsx";
+import moment from 'moment'
 import {
   GenerateExcelSheet,
   convertExceltoJosn,
@@ -14,22 +15,21 @@ function GenerateExcel() {
   const [containers, setContainers] = useState([]);
   const [set, setSet] = useState();
   const [sets, setSets] = useState([]);
-  const {equipments}=Store()
+  const { equipments } = Store();
   useEffect(() => {
     setSets(JSON.parse(localStorage.getItem(SETS)));
-    if(equipments.length){
-      formateGlobalData()
-      console.log(equipments)
+    if (equipments.length) {
+      formateGlobalData();
+      console.log(equipments);
     }
-
   }, []);
-  const formateGlobalData=()=>{
-    let items=[]
-    equipments.forEach((value)=>{
-      items.push({ContainerNumber:value})
-    })
-    setContainers(items)
-  }
+  const formateGlobalData = () => {
+    let items = [];
+    equipments.forEach((value) => {
+      items.push({ ContainerNumber: value });
+    });
+    setContainers(items);
+  };
   const handleAdd = async (e) => {
     e.preventDefault();
     if (e.target.files && e.target.files.length > 0) {
@@ -84,7 +84,17 @@ function GenerateExcel() {
   const generateRow = (containerNumebr) => {
     let item = [{ value: containerNumebr }];
     set.tables.forEach((obj) => {
-      item.push({ value: obj.defaultValue });
+      let row = {
+        value: obj.type==='Date'? new Date(): (obj.type==='Number'?Math.floor(obj.defaultValue):obj.defaultValue),
+        type:
+          obj.type === "Date"
+            ? Date
+            : obj.type === "Number"
+            ? Number
+            : String,
+      };
+      obj.type === "Date" && (row.format = "yyyy/mm/dd");
+      item.push(row);
     });
     return item;
   };
@@ -98,18 +108,20 @@ function GenerateExcel() {
       </Box>
       <div className="col-md-12">
         <Form>
-          {!containers.length&&<Row>
-            <div className="col-md-3">
-              <label htmlFor="">Upload Excel </label>
-              <Form.Control type="file" onChange={handleAdd} />
-            </div>
-            <div className="col-md-3 mt-4">
-              <Button className="btn-sm" onClick={handleAdd}>
-                Add
-              </Button>
-            </div>
-          </Row>}
-          
+          {!containers.length && (
+            <Row>
+              <div className="col-md-3">
+                <label htmlFor="">Upload Excel </label>
+                <Form.Control type="file" onChange={handleAdd} />
+              </div>
+              <div className="col-md-3 mt-4">
+                <Button className="btn-sm" onClick={handleAdd}>
+                  Add
+                </Button>
+              </div>
+            </Row>
+          )}
+
           <Row className="mt-4">
             <div className="col-md-3">
               <label htmlFor="">Select Excel Mode</label>

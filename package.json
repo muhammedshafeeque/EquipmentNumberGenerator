@@ -13,6 +13,7 @@
     "container-validator": "^1.1.0",
     "convert-excel-to-json": "^1.7.0",
     "framer-motion": "^10.12.16",
+    "moment": "^2.29.4",
     "random-number": "^0.0.9",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.4",

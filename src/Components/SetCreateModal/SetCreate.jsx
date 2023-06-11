@@ -1,10 +1,10 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, Fragment, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 
 import Form from "react-bootstrap/Form";
 import { SETS } from "../../Constant/Constant";
-function SetCreate({setReset}) {
+function SetCreate({ setReset, edit }) {
   const [lgShow, setLgShow] = useState(false);
   const [inputFields, setInputFields] = useState([
     { head: "", type: "", defaultValue: "" },
@@ -41,15 +41,49 @@ function SetCreate({setReset}) {
       let set = [{ name: name, tables: inputFields }];
       localStorage.setItem(SETS, JSON.stringify(set));
     }
+
+    setReset(sets);
+    setLgShow(false);
+  };
+
+  const handleUpdate = () => {
+    let sets = JSON.parse(localStorage.getItem(SETS));
+    sets = sets.filter((item) => {
+      return item.name !== edit.name;
+    });
+    sets.push({ name: name, tables: inputFields });
+    localStorage.setItem(SETS, JSON.stringify(sets));
     setInputFields([{ head: "", type: "", defaultValue: "" }]);
     setname("");
-    setReset(sets)
+    setReset(sets);
     setLgShow(false);
   };
 
   return (
     <>
-      <Button onClick={() => setLgShow(true)}>Create Set</Button>
+      {edit ? (
+        <Button
+          onClick={() => {
+            setInputFields([{ head: "", type: "", defaultValue: "" }]);
+            setname("");
+            setLgShow(true);
+            if (edit) {
+              setname(edit.name);
+              let values = [];
+              edit.tables.forEach((item) => {
+                values.push(item);
+              });
+              setInputFields(values);
+            }
+
+          }}
+          className="btn btn-danger"
+        >
+          Edit
+        </Button>
+      ) : (
+        <Button onClick={() => setLgShow(true)}>Create Set</Button>
+      )}
 
       <Modal
         size="lg"
@@ -59,14 +93,18 @@ function SetCreate({setReset}) {
       >
         <Modal.Header closeButton>
           <Modal.Title id="example-modal-sizes-title-lg">
-            Create Set
+            {edit ? "edit" : "Create"} Set
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form
             onSubmit={(e) => {
               e.preventDefault();
-              handleSubmit();
+              if (edit) {
+                handleUpdate();
+              } else {
+                handleSubmit();
+              }
             }}
           >
             <div className="col-md-6">
@@ -74,6 +112,7 @@ function SetCreate({setReset}) {
               <Form.Control
                 type="text"
                 name="setName"
+                value={name}
                 onChange={(e) => {
                   e.preventDefault();
                   setname(e.target.value);
