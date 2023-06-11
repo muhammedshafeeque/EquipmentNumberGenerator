@@ -85,7 +85,7 @@ function GenerateExcel() {
     let item = [{ value: containerNumebr }];
     set.tables.forEach((obj) => {
       let row = {
-        value: obj.type==='Date'? new Date(): (obj.type==='Number'?Math.floor(obj.defaultValue):obj.defaultValue),
+        value: obj.type==='Date'? new Date(obj.defaultValue): (obj.type==='Number'?Math.floor(obj.defaultValue):obj.defaultValue),
         type:
           obj.type === "Date"
             ? Date
