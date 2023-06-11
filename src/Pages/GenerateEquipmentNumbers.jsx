@@ -1,6 +1,6 @@
-import { Box, Button, Text } from "@chakra-ui/react";
+import { Box, Button, Text, useToast } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { Form, Row } from "react-bootstrap";
+import { Form, ProgressBar, Row } from "react-bootstrap";
 import validator from "container-validator";
 import { useNavigate } from "react-router-dom";
 import { Store } from "../Context/Store";
@@ -15,6 +15,8 @@ const GenerateEquipmentNumbers = () => {
   const [count, setCount] = useState(0);
   const [containerNumbers, setContainerNumber] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [progres,setProgress]=useState(0)
+  const toast=useToast()
   // const gen = rn.generator({
   //   min: 1000000,
   //   max: 10000000,
@@ -25,20 +27,32 @@ const GenerateEquipmentNumbers = () => {
     setLoading(true);
     let numbers = [];
     let i = 1000000;
-    while (numbers.length <= count) {
-      i = i + 1;
-      // let n = gen();
-      let containerNumber = prifix.toUpperCase() + i;
-
-      if (vali.isValid(containerNumber)) {
-        numbers.push(containerNumber);
+    if(prifix[prifix.length-1].toUpperCase()===('U'||'J'||'Z')){
+      while (numbers.length <= count) {
+        i = i + 1;
+        // let n = gen();
+        let containerNumber = prifix.toUpperCase() + i;
+  
+        if (vali.isValid(containerNumber)) {
+          numbers.push(containerNumber);
+          setProgress((numbers.length*100)/count)
+        }
+        if (i === 1000000000) {
+          break;
+        }
       }
-      if (i === 1000000000) {
-        break;
-      }
+      setLoading(false);
+      setContainerNumber([containerNumbers, ...numbers]);
+    }else{
+      toast({
+        title: 'invalid Prifix',
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      })
+      setLoading(false);
     }
-    setLoading(false);
-    setContainerNumber([containerNumbers, ...numbers]);
+   
   };
 
   return (
@@ -111,6 +125,7 @@ const GenerateEquipmentNumbers = () => {
       ) : (
         ""
       )}
+      {progres>0&&<ProgressBar now={progres}/>}
 
       <Box mt={5} p={5} display={"flex"} flexWrap={"wrap"}>
         {containerNumbers.map((num) => {
