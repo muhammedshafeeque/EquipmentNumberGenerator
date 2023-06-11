@@ -1,7 +1,6 @@
 import writeXlsxFile from "write-excel-file";
-
-const reader = new FileReader();
 export const GenerateExcelSheet = async (data) => {
+  console.log(data)
   await writeXlsxFile(data, {
     fileName: "file.xlsx",
   });

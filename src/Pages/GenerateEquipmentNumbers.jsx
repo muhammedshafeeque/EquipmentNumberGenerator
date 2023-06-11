@@ -8,7 +8,7 @@ import { Store } from "../Context/Store";
 // import rn from "random-number";
 
 const GenerateEquipmentNumbers = () => {
-  const {setContainers}=Store()
+  const {setEquipments}=Store()
   const navigate = useNavigate();
   const vali = new validator();
   const [prifix, setPrifix] = useState("");
@@ -26,7 +26,6 @@ const GenerateEquipmentNumbers = () => {
     let numbers = [];
     let i = 1000000;
     while (numbers.length <= count) {
-      console.log(i);
       i = i + 1;
       // let n = gen();
       let containerNumber = prifix.toUpperCase() + i;
@@ -102,7 +101,7 @@ const GenerateEquipmentNumbers = () => {
           <Button
             colorScheme="green"
             onClick={() => {
-              setContainers(containerNumbers)
+              setEquipments(containerNumbers)
               navigate("/excel");
             }}
           >

@@ -8,14 +8,28 @@ import {
   GenerateExcelSheet,
   convertExceltoJosn,
 } from "../Functions/BasicLogic";
+import { Store } from "../Context/Store";
 function GenerateExcel() {
   const toast = useToast();
   const [containers, setContainers] = useState([]);
   const [set, setSet] = useState();
   const [sets, setSets] = useState([]);
+  const {equipments}=Store()
   useEffect(() => {
     setSets(JSON.parse(localStorage.getItem(SETS)));
+    if(equipments.length){
+      formateGlobalData()
+      console.log(equipments)
+    }
+
   }, []);
+  const formateGlobalData=()=>{
+    let items=[]
+    equipments.forEach((value)=>{
+      items.push({ContainerNumber:value})
+    })
+    setContainers(items)
+  }
   const handleAdd = async (e) => {
     e.preventDefault();
     if (e.target.files && e.target.files.length > 0) {
@@ -68,7 +82,7 @@ function GenerateExcel() {
     GenerateExcelSheet(Rdata);
   };
   const generateRow = (containerNumebr) => {
-    let item = [{ value: containerNumebr, type: String }];
+    let item = [{ value: containerNumebr }];
     set.tables.forEach((obj) => {
       item.push({ value: obj.defaultValue });
     });
@@ -84,7 +98,7 @@ function GenerateExcel() {
       </Box>
       <div className="col-md-12">
         <Form>
-          <Row>
+          {!containers.length&&<Row>
             <div className="col-md-3">
               <label htmlFor="">Upload Excel </label>
               <Form.Control type="file" onChange={handleAdd} />
@@ -94,7 +108,8 @@ function GenerateExcel() {
                 Add
               </Button>
             </div>
-          </Row>
+          </Row>}
+          
           <Row className="mt-4">
             <div className="col-md-3">
               <label htmlFor="">Select Excel Mode</label>
