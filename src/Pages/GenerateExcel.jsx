@@ -125,7 +125,7 @@ function GenerateExcel() {
             <div className="col-md-3">
               <label htmlFor="">Select Excel Mode</label>
               <Form.Select onChange={handleSelectSet}>
-                {sets.length&&sets.map((item,i) => {
+                {sets&&sets.map((item,i) => {
                   return (
                     <option key={i} value={i}>
                       {item.name}
