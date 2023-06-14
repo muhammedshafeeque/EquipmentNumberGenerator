@@ -27,7 +27,7 @@ const GenerateEquipmentNumbers = () => {
     setLoading(true);
     let numbers = [];
     let i = 1000000;
-    if(prifix[prifix.length-1].toUpperCase()===('U'||'J'||'Z')){
+    if(prifix[prifix.length-1].toUpperCase()==='U'||'J'||'Z'){
       while (numbers.length <= count) {
         i = i + 1;
         // let n = gen();
@@ -77,6 +77,7 @@ const GenerateEquipmentNumbers = () => {
               maxLength={4}
               placeholder="Enter prifix"
               required
+              value={prifix}
               onChange={(e) => {
                 setPrifix(e.target.value);
               }}
@@ -89,22 +90,38 @@ const GenerateEquipmentNumbers = () => {
               required={true}
               type="number"
               placeholder="Enter count"
+              value={count}
               onChange={(e) => {
                 setCount(e.target.value);
               }}
             />
           </div>
           <div className="col-md-3 pt-2">
+          <Button
+                colorScheme="blue"
+                mt={5}
+                onClick={()=>{
+                  setPrifix('')
+                  setCount()
+                  setContainerNumber([])
+                  setProgress(0)
+                }}
+                isLoading={loading}
+                mr={2}
+              
+              >
+                Clear
+              </Button>
             {loading ? (
               "Loading..."
             ) : (
               <Button
-                colorScheme="blue"
+                colorScheme="green"
                 mt={5}
                 isLoading={loading}
                 type="submit"
               >
-                Button
+                Generate
               </Button>
             )}
           </div>

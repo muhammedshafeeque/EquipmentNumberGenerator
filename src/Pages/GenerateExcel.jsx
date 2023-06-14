@@ -19,13 +19,15 @@ function GenerateExcel() {
     setSets(JSON.parse(localStorage.getItem(SETS)));
     if (equipments.length) {
       formateGlobalData();
-      console.log(equipments);
     }
   }, []);
   const formateGlobalData = () => {
     let items = [];
-    equipments.forEach((value) => {
-      items.push({ ContainerNumber: value });
+    equipments.forEach((value,i) => {
+      if(i>0){
+        items.push({ ContainerNumber: value });
+      }
+     
     });
     setContainers(items);
   };
@@ -149,6 +151,7 @@ function GenerateExcel() {
         <Table striped bordered hover>
           <thead>
             <tr>
+              <th>sl No</th>
               <th>ContainerNumber</th>
               {set &&
                 set.tables.map((head, i) => {
@@ -160,6 +163,7 @@ function GenerateExcel() {
             {containers.map((item, i) => {
               return (
                 <tr key={i}>
+                  <td>{i}</td>
                   <td>{item.ContainerNumber}</td>
                   {set &&
                     set.tables.map((obj, j) => {
