@@ -17,6 +17,7 @@ const GenerateEquipmentNumbers = () => {
   const [loading, setLoading] = useState(false);
   const [progres,setProgress]=useState(0)
   const toast=useToast()
+  const [skip,setSkip]=useState(0)
   // const gen = rn.generator({
   //   min: 1000000,
   //   max: 10000000,
@@ -129,6 +130,7 @@ const GenerateEquipmentNumbers = () => {
       </Form>
       {containerNumbers.length ? (
         <Box display={"flex"} mt={5} justifyContent={"flex-end"} width={"100%"}>
+          
           <Button
             colorScheme="green"
             onClick={() => {

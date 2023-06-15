@@ -14,6 +14,8 @@ function GenerateExcel() {
   const [containers, setContainers] = useState([]);
   const [set, setSet] = useState();
   const [sets, setSets] = useState([]);
+  const [skipFrom,setSkipFrom]=useState(0)
+  const [skipTo,setSkipTo]=useState(0)
   const { equipments } = Store();
   useEffect(() => {
     setSets(JSON.parse(localStorage.getItem(SETS)));
@@ -123,7 +125,7 @@ function GenerateExcel() {
             </Row>
           )}
 
-          <Row className="mt-4">
+          <Row className="mt-4 col-md-12">
             <div className="col-md-3">
               <label htmlFor="">Select Excel Mode</label>
               <Form.Select onChange={handleSelectSet}>
@@ -136,14 +138,37 @@ function GenerateExcel() {
                 })}
               </Form.Select>
             </div>
-            <div className="col-md-6"></div>
-            <div className="col-md-3 ">
+            <div className="col-md-2">
+            <Form.Control placeholder="skip From" type="number" className="mt-4"/>
+            </div>
+            <div className="col-md-2">
+            <Form.Control placeholder="skip To" type="number" className="mt-4"/>
+            </div>
+            <div className="col-md-3 " style={{display:'flex' ,justifyContent:'space-between'}} >
+            
+              <Button
+                className="btn btn-sm btn-danger mt-4 float-rignt mr-2"
+                onClick={()=>{
+                  setContainers([])
+                }}
+                style={{marginRight:'1 rem'}}
+              >
+                Clear All Containers
+              </Button>
+              <Button
+                className="btn btn-sm btn-primary mt-4  ml-2 float-rignt"
+                onClick={handleGenerate}
+              >
+                Skip
+              </Button>
               <Button
                 className="btn btn-sm btn-success mt-4 float-rignt"
                 onClick={handleGenerate}
               >
                 Generate Excel
               </Button>
+              
+              
             </div>
           </Row>
         </Form>
