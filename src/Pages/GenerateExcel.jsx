@@ -14,24 +14,23 @@ function GenerateExcel() {
   const [containers, setContainers] = useState([]);
   const [set, setSet] = useState();
   const [sets, setSets] = useState([]);
-  const [skipFrom,setSkipFrom]=useState(0)
-  const [skipTo,setSkipTo]=useState(0)
+  const [skipFrom, setSkipFrom] = useState(0);
+  const [skipTo, setSkipTo] = useState(0);
   const { equipments } = Store();
-  const [booking,setBookig]=useState(false)
+  const [booking, setBookig] = useState(false);
   useEffect(() => {
     setSets(JSON.parse(localStorage.getItem(SETS)));
     if (equipments.length) {
-      setBookig(false)
+      setBookig(false);
       formateGlobalData();
     }
   }, [equipments]);
   const formateGlobalData = () => {
     let items = [];
-    equipments.forEach((value,i) => {
-      if(i>0){
+    equipments.forEach((value, i) => {
+      if (i > 0) {
         items.push({ ContainerNumber: value });
       }
-     
     });
     setContainers(items);
   };
@@ -48,8 +47,8 @@ function GenerateExcel() {
         const ws = wb.Sheets[wsname];
         const data = XLSX.utils.sheet_to_csv(ws, { header: 1 });
         let rJson = convertExceltoJosn(data);
-        if(rJson[0].BookingNumber){
-          setBookig(true)
+        if (rJson[0].BookingNumber) {
+          setBookig(true);
         }
         setContainers(rJson);
       };
@@ -72,20 +71,19 @@ function GenerateExcel() {
       itemObj[ob.head] = ob.defaultValue;
     });
     await containers.forEach((obj) => {
-
-      if(obj.BookingNumber){
-        setBookig(true)
+      if (obj.BookingNumber) {
+        setBookig(true);
       }
       itemObj.ContainerNumber = obj.ContainerNumber;
-      obj.BookingNumber&&(itemObj.BookingNumber=obj.BookingNumber)
+      obj.BookingNumber && (itemObj.BookingNumber = obj.BookingNumber);
       formMatedResults.push(itemObj);
     });
   };
   const handleGenerate = async (e) => {
     e.preventDefault();
     let HEADER_ROW = [{ value: "ContainerNumber" }];
-    if(booking){
-      HEADER_ROW.push({value:"BookingNumber"})
+    if (booking) {
+      HEADER_ROW.push({ value: "BookingNumber" });
     }
     await set.tables.forEach((item) => {
       HEADER_ROW.push({ value: item.head });
@@ -99,18 +97,19 @@ function GenerateExcel() {
   };
   const generateRow = (data) => {
     let item = [{ value: data.ContainerNumber }];
-    if(booking){
-        item.push({value:data.BookingNumber})
+    if (booking) {
+      item.push({ value: data.BookingNumber });
     }
     set.tables.forEach((obj) => {
       let row = {
-        value: obj.type==='Date'? new Date(obj.defaultValue): (obj.type==='Number'?Math.floor(obj.defaultValue):obj.defaultValue),
-        type:
+        value:
           obj.type === "Date"
-            ? Date
+            ? new Date(obj.defaultValue)
             : obj.type === "Number"
-            ? Number
-            : String,
+            ? Math.floor(obj.defaultValue)
+            : obj.defaultValue,
+        type:
+          obj.type === "Date" ? Date : obj.type === "Number" ? Number : String,
       };
       obj.type === "Date" && (row.format = "yyyy/mm/dd");
       item.push(row);
@@ -145,29 +144,40 @@ function GenerateExcel() {
             <div className="col-md-3">
               <label htmlFor="">Select Excel Mode</label>
               <Form.Select onChange={handleSelectSet}>
-                {sets&&sets.map((item,i) => {
-                  return (
-                    <option key={i} value={i}>
-                      {item.name}
-                    </option>
-                  );
-                })}
+                {sets &&
+                  sets.map((item, i) => {
+                    return (
+                      <option key={i} value={i}>
+                        {item.name}
+                      </option>
+                    );
+                  })}
               </Form.Select>
             </div>
             <div className="col-md-2">
-            <Form.Control placeholder="skip From" type="number" className="mt-4"/>
+              <Form.Control
+                placeholder="skip From"
+                type="number"
+                className="mt-4"
+              />
             </div>
             <div className="col-md-2">
-            <Form.Control placeholder="skip To" type="number" className="mt-4"/>
+              <Form.Control
+                placeholder="skip To"
+                type="number"
+                className="mt-4"
+              />
             </div>
-            <div className="col-md-3 " style={{display:'flex' ,justifyContent:'space-between'}} >
-            
+            <div
+              className="col-md-3 "
+              style={{ display: "flex", justifyContent: "space-between" }}
+            >
               <Button
                 className="btn btn-sm btn-danger mt-4 float-rignt mr-2"
-                onClick={()=>{
-                  setContainers([])
+                onClick={() => {
+                  setContainers([]);
                 }}
-                style={{marginRight:'1 rem'}}
+                style={{ marginRight: "1 rem" }}
               >
                 Clear All Containers
               </Button>
@@ -177,13 +187,14 @@ function GenerateExcel() {
               >
                 Skip
               </Button>
-              <Button
+              {
+                set&&<Button
                 className="btn btn-sm btn-success mt-4 float-rignt"
                 onClick={handleGenerate}
               >
                 Generate Excel
               </Button>
-              
+              }
               
             </div>
           </Row>
@@ -194,8 +205,7 @@ function GenerateExcel() {
             <tr>
               <th>sl No</th>
               <th>ContainerNumber</th>
-              {booking&&
-              <th>Boking Number</th>}
+              {booking && <th>Boking Number</th>}
               {set &&
                 set.tables.map((head, i) => {
                   return <th key={i}>{head.head}</th>;
@@ -208,8 +218,8 @@ function GenerateExcel() {
                 <tr key={i}>
                   <td>{i}</td>
                   <td>{item.ContainerNumber}</td>
-                  {item.BookingNumber&&<td>{item.BookingNumber}</td>}
-                  
+                  {item.BookingNumber && <td>{item.BookingNumber}</td>}
+
                   {set &&
                     set.tables.map((obj, j) => {
                       return <td key={j}>{obj.defaultValue}</td>;
