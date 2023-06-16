@@ -17,12 +17,14 @@ function GenerateExcel() {
   const [skipFrom,setSkipFrom]=useState(0)
   const [skipTo,setSkipTo]=useState(0)
   const { equipments } = Store();
+  const [booking,setBookig]=useState(false)
   useEffect(() => {
     setSets(JSON.parse(localStorage.getItem(SETS)));
     if (equipments.length) {
+      setBookig(false)
       formateGlobalData();
     }
-  }, []);
+  }, [equipments]);
   const formateGlobalData = () => {
     let items = [];
     equipments.forEach((value,i) => {
@@ -46,6 +48,9 @@ function GenerateExcel() {
         const ws = wb.Sheets[wsname];
         const data = XLSX.utils.sheet_to_csv(ws, { header: 1 });
         let rJson = convertExceltoJosn(data);
+        if(rJson[0].BookingNumber){
+          setBookig(true)
+        }
         setContainers(rJson);
       };
       reader.readAsBinaryString(f);
@@ -67,25 +72,36 @@ function GenerateExcel() {
       itemObj[ob.head] = ob.defaultValue;
     });
     await containers.forEach((obj) => {
+
+      if(obj.BookingNumber){
+        setBookig(true)
+      }
       itemObj.ContainerNumber = obj.ContainerNumber;
+      obj.BookingNumber&&(itemObj.BookingNumber=obj.BookingNumber)
       formMatedResults.push(itemObj);
     });
   };
   const handleGenerate = async (e) => {
     e.preventDefault();
     let HEADER_ROW = [{ value: "ContainerNumber" }];
+    if(booking){
+      HEADER_ROW.push({value:"BookingNumber"})
+    }
     await set.tables.forEach((item) => {
       HEADER_ROW.push({ value: item.head });
     });
     let Rdata = [HEADER_ROW];
     await containers.forEach(async (item) => {
-      Rdata.push(await generateRow(item.ContainerNumber));
+      Rdata.push(await generateRow(item));
     });
 
     GenerateExcelSheet(Rdata);
   };
-  const generateRow = (containerNumebr) => {
-    let item = [{ value: containerNumebr }];
+  const generateRow = (data) => {
+    let item = [{ value: data.ContainerNumber }];
+    if(booking){
+        item.push({value:data.BookingNumber})
+    }
     set.tables.forEach((obj) => {
       let row = {
         value: obj.type==='Date'? new Date(obj.defaultValue): (obj.type==='Number'?Math.floor(obj.defaultValue):obj.defaultValue),
@@ -178,6 +194,8 @@ function GenerateExcel() {
             <tr>
               <th>sl No</th>
               <th>ContainerNumber</th>
+              {booking&&
+              <th>Boking Number</th>}
               {set &&
                 set.tables.map((head, i) => {
                   return <th key={i}>{head.head}</th>;
@@ -190,6 +208,8 @@ function GenerateExcel() {
                 <tr key={i}>
                   <td>{i}</td>
                   <td>{item.ContainerNumber}</td>
+                  {item.BookingNumber&&<td>{item.BookingNumber}</td>}
+                  
                   {set &&
                     set.tables.map((obj, j) => {
                       return <td key={j}>{obj.defaultValue}</td>;
