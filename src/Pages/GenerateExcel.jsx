@@ -9,6 +9,7 @@ import {
   convertExceltoJosn,
 } from "../Functions/BasicLogic";
 import { Store } from "../Context/Store";
+import CreateRandom from "../Components/CreateRandom/CreateRandom";
 function GenerateExcel() {
   const toast = useToast();
   const [containers, setContainers] = useState([]);
@@ -195,7 +196,7 @@ function GenerateExcel() {
                 Generate Excel
               </Button>
               }
-              
+              <CreateRandom/>
             </div>
           </Row>
         </Form>
