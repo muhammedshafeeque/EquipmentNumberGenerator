@@ -18,11 +18,9 @@ function GenerateExcel() {
   const [skipFrom, setSkipFrom] = useState(0);
   const [skipTo, setSkipTo] = useState(0);
   const { equipments } = Store();
-  const [booking, setBookig] = useState(false);
   useEffect(() => {
     setSets(JSON.parse(localStorage.getItem(SETS)));
     if (equipments.length) {
-      setBookig(false);
       formateGlobalData();
     }
   }, [equipments]);
@@ -48,9 +46,6 @@ function GenerateExcel() {
         const ws = wb.Sheets[wsname];
         const data = XLSX.utils.sheet_to_csv(ws, { header: 1 });
         let rJson = convertExceltoJosn(data);
-        if (rJson[0].BookingNumber) {
-          setBookig(true);
-        }
         setContainers(rJson);
       };
       reader.readAsBinaryString(f);
@@ -71,6 +66,20 @@ function GenerateExcel() {
     if (!exists) {
       item.tables.push({ head: "ContainerNumber" });
     }
+    if(containers[0].BookingNumber){
+      let extistB=item.tables.find((obj)=>{
+        return obj.head==="BookingNumber"
+      })
+      if(!extistB){
+        item.tables.push({head:'BookingNumber'})
+      }
+      
+    }else{
+      item.tables=item.tables.filter((o)=>{
+        return o.head!=='BookingNumber'
+      })
+    }
+
 
     setSet(item);
     let formMatedResults = [];
@@ -79,11 +88,7 @@ function GenerateExcel() {
       itemObj[ob.head] = ob.defaultValue;
     });
     await containers.forEach((obj) => {
-      if (obj.BookingNumber) {
-        setBookig(true);
-      } else {
-        setBookig(false);
-      }
+
 
       itemObj.ContainerNumber = obj.ContainerNumber;
       obj.BookingNumber && (itemObj.BookingNumber = obj.BookingNumber);
@@ -94,10 +99,11 @@ function GenerateExcel() {
   };
   const handleGenerate = async (e) => {
     e.preventDefault();
-    let HEADER_ROW = [{ value: "ContainerNumber" }];
-    if (booking) {
-      HEADER_ROW.push({ value: "BookingNumber" });
-    }
+    let HEADER_ROW = [];
+    // if (containers[0].BookingNumber) {
+    //   HEADER_ROW.push({ value: "BookingNumber" });
+    // }
+    
     await set.tables.forEach((item) => {
       HEADER_ROW.push({ value: item.head });
     });
@@ -109,18 +115,20 @@ function GenerateExcel() {
     GenerateExcelSheet(Rdata);
   };
   const generateRow = (data) => {
-    let item = [{ value: data.ContainerNumber }];
-    if (booking) {
-      item.push({ value: data.BookingNumber });
-    }
+    let item = [];
+    // if(containers[0].BookingNumber){
+    //   item.push({ value: data.BookingNumber });
+    // }
+   
+
     set.tables.forEach((obj) => {
       let row = {
         value:
           obj.type === "Date"
-            ? new Date(obj.defaultValue)
+            ? new Date(data[obj.head]?data[obj.head]:obj.defaultValue)
             : obj.type === "Number"
-            ? Math.floor(obj.defaultValue)
-            : obj.defaultValue,
+            ? Math.floor(data[obj.head]?data[obj.head]:obj.defaultValue)
+            : data[obj.head]?data[obj.head]:obj.defaultValue,
         type:
           obj.type === "Date" ? Date : obj.type === "Number" ? Number : String,
       };
