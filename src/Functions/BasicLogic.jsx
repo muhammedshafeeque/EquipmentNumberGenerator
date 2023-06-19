@@ -22,6 +22,11 @@ export const convertExceltoJosn = (csv) => {
   }
   return result;
 };
-export  const applayRandoms=()=>{
-  
+export  const applayRandoms=(set,config)=>{
+  try {
+    
+  } catch (error) {
+    
+  }
+
 }

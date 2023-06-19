@@ -65,6 +65,13 @@ function GenerateExcel() {
   };
   const handleSelectSet = async (e) => {
     let item = sets[e.target.value];
+    let exists = item.tables.find((ob) => {
+      return ob.head === "ContainerNumber";
+    });
+    if (!exists) {
+      item.tables.push({ head: "ContainerNumber" });
+    }
+
     setSet(item);
     let formMatedResults = [];
     let itemObj = {};
@@ -74,11 +81,16 @@ function GenerateExcel() {
     await containers.forEach((obj) => {
       if (obj.BookingNumber) {
         setBookig(true);
+      } else {
+        setBookig(false);
       }
+
       itemObj.ContainerNumber = obj.ContainerNumber;
       obj.BookingNumber && (itemObj.BookingNumber = obj.BookingNumber);
       formMatedResults.push(itemObj);
     });
+
+    setContainers(formMatedResults);
   };
   const handleGenerate = async (e) => {
     e.preventDefault();
@@ -140,74 +152,75 @@ function GenerateExcel() {
               </div>
             </Row>
           )}
-          {containers.length?<Row className="mt-4 col-md-12">
-            <div className="col-md-2">
-              <label htmlFor="">Select Excel Mode</label>
-              <Form.Select onChange={handleSelectSet}>
-                {sets &&
-                  sets.map((item, i) => {
-                    return (
-                      <option key={i} value={i}>
-                        {item.name}
-                      </option>
-                    );
-                  })}
-              </Form.Select>
-            </div>
-            <div className="col-md-2">
-              <Form.Control
-                placeholder="skip From"
-                type="number"
-                className="mt-4"
-              />
-            </div>
-            <div className="col-md-2">
-              <Form.Control
-                placeholder="skip To"
-                type="number"
-                className="mt-4"
-              />
-            </div>
-            <div
-              className="col-md-4 "
-              style={{ display: "flex", justifyContent: "space-between" }}
-            >
-              <Button
-                className="btn btn-sm btn-danger mt-4 float-rignt mr-2"
-                onClick={() => {
-                  setContainers([]);
-                }}
-                style={{ marginRight: "1 rem" }}
+          {containers.length ? (
+            <Row className="mt-4 col-md-12">
+              <div className="col-md-2">
+                <label htmlFor="">Select Excel Mode</label>
+                <Form.Select onChange={handleSelectSet}>
+                  {sets &&
+                    sets.map((item, i) => {
+                      return (
+                        <option key={i} value={i}>
+                          {item.name}
+                        </option>
+                      );
+                    })}
+                </Form.Select>
+              </div>
+              <div className="col-md-2">
+                <Form.Control
+                  placeholder="skip From"
+                  type="number"
+                  className="mt-4"
+                />
+              </div>
+              <div className="col-md-2">
+                <Form.Control
+                  placeholder="skip To"
+                  type="number"
+                  className="mt-4"
+                />
+              </div>
+              <div
+                className="col-md-4 "
+                style={{ display: "flex", justifyContent: "space-between" }}
               >
-                Clear All Containers
-              </Button>
-              <Button
-                className="btn btn-sm btn-primary mt-4  ml-2 float-rignt"
-                onClick={handleGenerate}
-              >
-                Skip
-              </Button>
-              {
-                set&&<Button
-                className="btn btn-sm btn-success mt-4 float-rignt"
-                onClick={handleGenerate}
-              >
-                Generate Excel
-              </Button>
-              }
-              {set&&<CreateRandom set={set}/>}
-              
-            </div>
-          </Row>:''}
-          
+                <Button
+                  className="btn btn-sm btn-danger mt-4 float-rignt mr-2"
+                  onClick={() => {
+                    setContainers([]);
+                  }}
+                  style={{ marginRight: "1 rem" }}
+                >
+                  Clear All Containers
+                </Button>
+                <Button
+                  className="btn btn-sm btn-primary mt-4  ml-2 float-rignt"
+                  onClick={handleGenerate}
+                >
+                  Skip
+                </Button>
+                {set && (
+                  <Button
+                    className="btn btn-sm btn-success mt-4 float-rignt"
+                    onClick={handleGenerate}
+                  >
+                    Generate Excel
+                  </Button>
+                )}
+                {set && <CreateRandom set={set} />}
+              </div>
+            </Row>
+          ) : (
+            ""
+          )}
         </Form>
 
         <Table striped bordered hover>
           <thead>
             <tr>
               <th>sl No</th>
-              <th>ContainerNumber</th>
-              {booking && <th>Boking Number</th>}
+
               {set &&
                 set.tables.map((head, i) => {
                   return <th key={i}>{head.head}</th>;
@@ -218,14 +231,18 @@ function GenerateExcel() {
             {containers.map((item, i) => {
               return (
                 <tr key={i}>
-                  <td>{i}</td>
-                  <td>{item.ContainerNumber}</td>
-                  {item.BookingNumber && <td>{item.BookingNumber}</td>}
-
+                  <td>{i + 1}</td>
+                  {/* <td>{item.ContainerNumber}</td>
+                  {item.BookingNumber && <td>{item.BookingNumber}</td>} */}
                   {set &&
+                    Object.keys(item).map((obj, j) => {
+                      return <td key={j}>{item[obj]}</td>;
+                    })}
+
+                  {/* {set &&
                     set.tables.map((obj, j) => {
                       return <td key={j}>{obj.defaultValue}</td>;
-                    })}
+                    })} */}
                 </tr>
               );
             })}
