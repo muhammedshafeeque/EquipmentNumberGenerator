@@ -159,7 +159,7 @@ function SetCreate({ setReset, edit }) {
                           : "text"
                       }
                       placeholder="Enter Default Value"
-                      required
+                      required={(inputField.type==="Date"||inputField.type==="Number")?true:false}
                       name="defaultValue"
                       value={inputField.defaultValue}
                       onChange={(event) => handleInputChange(index, event)}
