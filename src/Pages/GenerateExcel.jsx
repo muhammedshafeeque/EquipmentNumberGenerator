@@ -140,9 +140,8 @@ function GenerateExcel() {
               </div>
             </Row>
           )}
-
-          <Row className="mt-4 col-md-12">
-            <div className="col-md-3">
+          {containers.length?<Row className="mt-4 col-md-12">
+            <div className="col-md-2">
               <label htmlFor="">Select Excel Mode</label>
               <Form.Select onChange={handleSelectSet}>
                 {sets &&
@@ -170,7 +169,7 @@ function GenerateExcel() {
               />
             </div>
             <div
-              className="col-md-3 "
+              className="col-md-4 "
               style={{ display: "flex", justifyContent: "space-between" }}
             >
               <Button
@@ -196,9 +195,11 @@ function GenerateExcel() {
                 Generate Excel
               </Button>
               }
-              <CreateRandom/>
+              {set&&<CreateRandom set={set}/>}
+              
             </div>
-          </Row>
+          </Row>:''}
+          
         </Form>
 
         <Table striped bordered hover>
