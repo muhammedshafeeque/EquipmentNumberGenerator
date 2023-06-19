@@ -22,3 +22,6 @@ export const convertExceltoJosn = (csv) => {
   }
   return result;
 };
+export  const applayRandoms=()=>{
+  
+}
